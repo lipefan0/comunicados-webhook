@@ -13,15 +13,26 @@ export function WebhookSettings({ onUrlChange }: WebhookSettingsProps) {
   const [url, setUrl] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [timeoutId, setTimeoutId] = useState<number | null>(null);
 
   useEffect(() => {
     // Load saved URL on component mount
+    // Note: onUrlChange should be wrapped with useCallback in parent to prevent unnecessary re-runs
     const savedUrl = getWebhookUrl();
     if (savedUrl) {
       setUrl(savedUrl);
       onUrlChange?.(savedUrl);
     }
   }, [onUrlChange]);
+
+  useEffect(() => {
+    // Cleanup timeout on unmount
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, [timeoutId]);
 
   const validateUrl = (urlString: string): boolean => {
     if (!urlString.trim()) {
@@ -49,6 +60,11 @@ export function WebhookSettings({ onUrlChange }: WebhookSettingsProps) {
     setError(null);
     setSuccess(null);
 
+    // Clear any existing timeout
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+
     if (!validateUrl(url)) {
       return;
     }
@@ -59,7 +75,8 @@ export function WebhookSettings({ onUrlChange }: WebhookSettingsProps) {
       onUrlChange?.(url);
       
       // Clear success message after 3 seconds
-      setTimeout(() => setSuccess(null), 3000);
+      const id = setTimeout(() => setSuccess(null), 3000);
+      setTimeoutId(id);
     } catch (err) {
       setError(
         err instanceof Error
@@ -73,6 +90,11 @@ export function WebhookSettings({ onUrlChange }: WebhookSettingsProps) {
     setError(null);
     setSuccess(null);
 
+    // Clear any existing timeout
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+
     try {
       clearWebhookUrl();
       setUrl("");
@@ -80,7 +102,8 @@ export function WebhookSettings({ onUrlChange }: WebhookSettingsProps) {
       onUrlChange?.(null);
       
       // Clear success message after 3 seconds
-      setTimeout(() => setSuccess(null), 3000);
+      const id = setTimeout(() => setSuccess(null), 3000);
+      setTimeoutId(id);
     } catch (err) {
       setError(
         err instanceof Error
