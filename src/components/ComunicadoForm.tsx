@@ -166,10 +166,11 @@ export function ComunicadoForm({ webhookUrl }: ComunicadoFormProps) {
             <SelectValue placeholder="Selecione o motivo" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="Urgente">Urgente</SelectItem>
-            <SelectItem value="Importante">Importante</SelectItem>
-            <SelectItem value="Informativo">Informativo</SelectItem>
-            <SelectItem value="Atualização">Atualização</SelectItem>
+            <SelectItem value="Beneficios">Beneficios</SelectItem>
+            <SelectItem value="Evento">Evento</SelectItem>
+            <SelectItem value="Aviso">Aviso</SelectItem>
+            <SelectItem value="Atenção">Atenção</SelectItem>
+            <SelectItem value="Solicitação">Solicitação</SelectItem>
           </SelectContent>
         </Select>
       </div>
