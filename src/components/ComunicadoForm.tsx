@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { AlertCircle, CheckCircle2, Loader2 } from "lucide-react";
+import { getWebhookUrl } from "@/lib/storage";
 
 type Motivo = "Urgente" | "Importante" | "Informativo" | "Atualização";
 
@@ -28,7 +29,11 @@ const equipesDisponiveis = [
   "RH",
 ];
 
-export function ComunicadoForm() {
+interface ComunicadoFormProps {
+  webhookUrl: string | null;
+}
+
+export function ComunicadoForm({ webhookUrl }: ComunicadoFormProps) {
   const [formData, setFormData] = useState<FormData>({
     motivo: "",
     equipes: [],
@@ -101,11 +106,12 @@ export function ComunicadoForm() {
     setLoading(true);
 
     try {
-      const webhookUrl = import.meta.env.VITE_WEBHOOK_URL;
+      // Get webhook URL from localStorage
+      const currentWebhookUrl = getWebhookUrl();
 
-      if (!webhookUrl) {
+      if (!currentWebhookUrl) {
         throw new Error(
-          "URL do webhook não configurada. Configure a variável VITE_WEBHOOK_URL."
+          "URL do webhook não configurada. Configure a URL nas configurações acima."
         );
       }
 
@@ -115,7 +121,7 @@ export function ComunicadoForm() {
         mensagem: formData.mensagem.trim(),
       };
 
-      const response = await fetch(webhookUrl, {
+      const response = await fetch(currentWebhookUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -151,6 +157,8 @@ export function ComunicadoForm() {
   const allEquipesSelected = equipesDisponiveis.every((equipe) =>
     formData.equipes.includes(equipe)
   );
+
+  const isSubmitDisabled = !webhookUrl || loading;
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -226,6 +234,13 @@ export function ComunicadoForm() {
       </div>
 
       {/* Mensagens de erro e sucesso */}
+      {!webhookUrl && (
+        <div className="flex items-center gap-2 p-3 text-sm text-amber-700 bg-amber-50 rounded-md border border-amber-200">
+          <AlertCircle className="h-4 w-4 flex-shrink-0" />
+          <p>Configure a URL do webhook acima para enviar comunicados.</p>
+        </div>
+      )}
+
       {error && (
         <div className="flex items-center gap-2 p-3 text-sm text-destructive bg-destructive/10 rounded-md border border-destructive/20">
           <AlertCircle className="h-4 w-4 flex-shrink-0" />
@@ -241,7 +256,7 @@ export function ComunicadoForm() {
       )}
 
       {/* Botão de envio */}
-      <Button type="submit" className="w-full" disabled={loading}>
+      <Button type="submit" className="w-full" disabled={isSubmitDisabled}>
         {loading ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
