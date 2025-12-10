@@ -12,7 +12,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { AlertCircle, CheckCircle2, Loader2 } from "lucide-react";
 
-type Motivo = "Urgente" | "Importante" | "Informativo" | "Atualização";
+type Motivo = "Beneficios" | "Evento" | "Aviso" | "Atenção" | "Solicitação";
 
 interface FormData {
   motivo: Motivo | "";
@@ -52,7 +52,7 @@ export function ComunicadoForm({ webhookUrl }: ComunicadoFormProps) {
     const newEquipes = formData.equipes.includes(equipe)
       ? formData.equipes.filter((e) => e !== equipe)
       : [...formData.equipes, equipe];
-    
+
     setFormData({ ...formData, equipes: newEquipes });
     setError(null);
   };
@@ -61,7 +61,7 @@ export function ComunicadoForm({ webhookUrl }: ComunicadoFormProps) {
     const allSelected = equipesDisponiveis.every((equipe) =>
       formData.equipes.includes(equipe)
     );
-    
+
     setFormData({
       ...formData,
       equipes: allSelected ? [] : [...equipesDisponiveis],
@@ -177,7 +177,7 @@ export function ComunicadoForm({ webhookUrl }: ComunicadoFormProps) {
       {/* Seleção de Equipes */}
       <div className="space-y-3">
         <Label>Equipes *</Label>
-        
+
         {/* Checkbox "Todos" */}
         <div className="flex items-center space-x-2 pb-2 border-b">
           <Checkbox
