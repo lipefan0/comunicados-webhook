@@ -9,6 +9,35 @@ Este projeto integra-se com o Make (anteriormente Integromat) para:
 2. Processar e melhorar o texto do comunicado usando IA
 3. Enviar emails automaticamente para as equipes selecionadas
 
+## ⚙️ Configuração do Webhook
+
+**A URL do webhook agora é configurada diretamente na interface do usuário**, sem necessidade de variáveis de ambiente ou redeploy.
+
+### Como configurar:
+
+1. Abra a aplicação no navegador
+2. No topo da página, você verá um card "Configuração do Webhook"
+3. Insira a URL do seu webhook (por exemplo, do Make)
+4. Clique em "Salvar URL"
+
+A URL será salva no **localStorage do navegador** e estará disponível sempre que você acessar a aplicação do mesmo navegador/dispositivo.
+
+### Privacidade e Segurança
+
+- ✅ A URL do webhook é salva **apenas no navegador local** (localStorage)
+- ✅ Nenhum dado é enviado para servidores externos além do webhook configurado
+- ⚠️ A URL **não é criptografada** no localStorage
+- ⚠️ A URL é específica para cada **navegador/dispositivo**
+- ⚠️ Se você limpar os dados do navegador, precisará configurar novamente
+- 💡 Recomendamos usar **HTTPS** para maior segurança
+
+### Limitações
+
+- A URL salva é específica para o navegador/dispositivo atual
+- Se você acessar de outro navegador ou dispositivo, precisará configurar novamente
+- Limpar os dados do navegador também removerá a URL salva
+
+
 ## 🚀 Tecnologias Utilizadas
 
 - **React 19** - Biblioteca para construção da interface
@@ -37,15 +66,13 @@ cd comunicados-webhook
 npm install
 ```
 
-3. Configure o arquivo de ambiente:
+3. **(Opcional)** Se desejar usar variáveis de ambiente para desenvolvimento local:
 ```bash
 cp .env.example .env
 ```
 
-4. Edite o arquivo `.env` e configure a URL do webhook do Make:
-```env
-VITE_WEBHOOK_URL=https://hook.us1.make.com/your-webhook-url
-```
+**Nota**: A configuração via arquivo `.env` não é mais necessária. A URL do webhook deve ser configurada diretamente na interface da aplicação.
+
 
 ## 🏃 Como Executar
 
@@ -78,25 +105,37 @@ comunicados-webhook/
 │   │   ├── ui/         # Componentes shadcn/ui
 │   │   │   ├── button.tsx
 │   │   │   ├── checkbox.tsx
+│   │   │   ├── input.tsx
 │   │   │   ├── label.tsx
 │   │   │   ├── select.tsx
 │   │   │   └── textarea.tsx
-│   │   └── ComunicadoForm.tsx  # Formulário principal
+│   │   ├── ComunicadoForm.tsx    # Formulário principal
+│   │   └── WebhookSettings.tsx   # Configuração do webhook
 │   ├── lib/
-│   │   └── utils.ts    # Utilitários (cn function)
-│   ├── App.tsx         # Componente principal
-│   ├── main.tsx        # Entry point
-│   ├── index.css       # Estilos globais + Tailwind
-│   └── vite-env.d.ts   # Types do Vite
-├── .env.example        # Exemplo de variáveis de ambiente
-├── index.html          # HTML template
+│   │   ├── storage.ts   # Funções de localStorage
+│   │   └── utils.ts     # Utilitários (cn function)
+│   ├── App.tsx          # Componente principal
+│   ├── main.tsx         # Entry point
+│   ├── index.css        # Estilos globais + Tailwind
+│   └── vite-env.d.ts    # Types do Vite
+├── .env.example         # Exemplo de variáveis (legado)
+├── index.html           # HTML template
 ├── package.json
-├── tailwind.config.js  # Configuração Tailwind
-├── tsconfig.json       # Configuração TypeScript
-└── vite.config.ts      # Configuração Vite
+├── tailwind.config.js   # Configuração Tailwind
+├── tsconfig.json        # Configuração TypeScript
+└── vite.config.ts       # Configuração Vite
 ```
 
 ## 🎨 Funcionalidades
+
+### Configuração do Webhook
+
+1. **URL Configurável na Interface**
+   - Campo de entrada para URL do webhook
+   - Validação de URL (formato e protocolo)
+   - Botões para Salvar e Limpar
+   - Feedback visual de sucesso/erro
+   - Persistência em localStorage
 
 ### Formulário de Comunicados
 
@@ -121,6 +160,7 @@ comunicados-webhook/
 
 4. **Validação**
    - Todos os campos são obrigatórios
+   - Webhook URL deve estar configurada
    - Feedback visual de erros
    - Mensagens claras de validação
 
@@ -129,6 +169,8 @@ comunicados-webhook/
    - Feedback de sucesso
    - Mensagens de erro
    - Limpeza automática após envio bem-sucedido
+   - Botão desabilitado quando webhook não configurado
+
 
 ## 📤 Formato dos Dados Enviados ao Webhook
 
@@ -152,11 +194,15 @@ O webhook deve retornar status HTTP 200-299 para indicar sucesso.
 2. Crie um novo cenário
 3. Adicione um trigger "Webhook" → "Custom Webhook"
 4. Copie a URL do webhook gerada
-5. Cole a URL no arquivo `.env` do projeto
-6. Configure as ações desejadas no Make:
+5. **Cole a URL no campo "Webhook URL" na interface da aplicação**
+6. Clique em "Salvar URL"
+7. Configure as ações desejadas no Make:
    - Processar o texto com IA (OpenAI, ChatGPT, etc.)
    - Enviar emails para as equipes selecionadas
    - Salvar em banco de dados, etc.
+
+**Nota**: A URL não precisa mais ser configurada em arquivo `.env`. Basta inserir na interface do usuário.
+
 
 ## 🎯 Design
 
@@ -166,16 +212,28 @@ O webhook deve retornar status HTTP 200-299 para indicar sucesso.
 - Tema claro com possibilidade de dark mode
 - Feedback visual para todas as interações
 - Card centralizado com sombra e bordas arredondadas
+- Configuração de webhook integrada na interface
 
 ## 📸 Screenshots
 
 O sistema apresenta:
+- Card de configuração do webhook no topo
 - Formulário centralizado em card com sombra
 - Campo select estilizado para motivo
 - Checkboxes com labels clicáveis
 - Textarea responsivo para a mensagem
 - Botão com estado de loading
 - Mensagens de sucesso/erro com ícones
+- Avisos quando webhook não configurado
+
+## 💾 Armazenamento Local
+
+A aplicação usa **localStorage** do navegador para salvar a URL do webhook:
+- **Chave**: `comunicados:webhookUrl`
+- **Persistência**: Dados permanecem entre sessões
+- **Privacidade**: Armazenado apenas localmente, sem envio para servidores
+- **Limitação**: Específico para cada navegador/dispositivo
+
 
 ## 🛠️ Scripts Disponíveis
 
@@ -200,4 +258,4 @@ Contribuições são bem-vindas! Sinta-se à vontade para abrir issues e pull re
 
 ---
 
-**Nota**: Certifique-se de manter sua URL do webhook segura e nunca commite o arquivo `.env` no repositório.
+**Nota**: A URL do webhook é armazenada localmente no navegador (localStorage) e não é enviada para servidores externos. Certifique-se de manter sua URL segura e de usar HTTPS sempre que possível.

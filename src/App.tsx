@@ -1,6 +1,14 @@
+import { useState, useCallback } from "react";
 import { ComunicadoForm } from "./components/ComunicadoForm";
+import { WebhookSettings } from "./components/WebhookSettings";
 
 function App() {
+  const [webhookUrl, setWebhookUrl] = useState<string | null>(null);
+
+  const handleUrlChange = useCallback((url: string | null) => {
+    setWebhookUrl(url);
+  }, []);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 py-8 px-4">
       <div className="max-w-2xl mx-auto">
@@ -13,8 +21,10 @@ function App() {
           </p>
         </div>
 
+        <WebhookSettings onUrlChange={handleUrlChange} />
+
         <div className="bg-white rounded-lg shadow-lg p-6 md:p-8">
-          <ComunicadoForm />
+          <ComunicadoForm webhookUrl={webhookUrl} />
         </div>
 
         <div className="mt-6 text-center text-sm text-slate-500">
