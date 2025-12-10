@@ -21,8 +21,7 @@ export function WebhookSettings({ onUrlChange }: WebhookSettingsProps) {
       setUrl(savedUrl);
       onUrlChange?.(savedUrl);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [onUrlChange]);
 
   const validateUrl = (urlString: string): boolean => {
     if (!urlString.trim()) {
