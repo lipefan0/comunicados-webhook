@@ -21,7 +21,8 @@ export function WebhookSettings({ onUrlChange }: WebhookSettingsProps) {
       setUrl(savedUrl);
       onUrlChange?.(savedUrl);
     }
-  }, [onUrlChange]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const validateUrl = (urlString: string): boolean => {
     if (!urlString.trim()) {
@@ -36,11 +37,6 @@ export function WebhookSettings({ onUrlChange }: WebhookSettingsProps) {
       if (parsedUrl.protocol !== "https:" && parsedUrl.protocol !== "http:") {
         setError("A URL deve usar o protocolo HTTP ou HTTPS.");
         return false;
-      }
-
-      // Warn if using HTTP instead of HTTPS
-      if (parsedUrl.protocol === "http:") {
-        setError("Aviso: HTTPS é recomendado para maior segurança.");
       }
 
       return true;

@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { AlertCircle, CheckCircle2, Loader2 } from "lucide-react";
-import { getWebhookUrl } from "@/lib/storage";
 
 type Motivo = "Urgente" | "Importante" | "Informativo" | "Atualização";
 
@@ -106,10 +105,7 @@ export function ComunicadoForm({ webhookUrl }: ComunicadoFormProps) {
     setLoading(true);
 
     try {
-      // Get webhook URL from localStorage
-      const currentWebhookUrl = getWebhookUrl();
-
-      if (!currentWebhookUrl) {
+      if (!webhookUrl) {
         throw new Error(
           "URL do webhook não configurada. Configure a URL nas configurações acima."
         );
@@ -121,7 +117,7 @@ export function ComunicadoForm({ webhookUrl }: ComunicadoFormProps) {
         mensagem: formData.mensagem.trim(),
       };
 
-      const response = await fetch(currentWebhookUrl, {
+      const response = await fetch(webhookUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
